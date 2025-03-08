@@ -7,7 +7,7 @@ namespace Ui {
 
   Button::Button(const int& padding, const char* text) : Base(SkRect::MakeEmpty()), m_label(text) {
     setupFont();
-    updateBounds();
+    setupBounds();
   }
 
   void Button::setupFont() {
@@ -20,6 +20,10 @@ namespace Ui {
 
     m_font = SkFont(typeface, m_fontSize);
     m_font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
+  }
+
+  void Button::update() {
+    
   }
 
   void Button::draw(SkCanvas* canvas) {
@@ -61,17 +65,35 @@ namespace Ui {
     canvas->drawSimpleText(m_label.c_str(), m_label.size(), SkTextEncoding::kUTF8, x, y, m_font, paint);
   }
 
+  void Button::updateBounds(const SkRect& bounds) {
+    m_bounds = bounds;
+  }
+
   void Button::onMouseClick() {
     if (m_isEnabled && m_onClickCb) {
       m_onClickCb();
     }
   }
 
+  void Button::onMouseMove(float x, float y) {
+    if (m_bounds.contains(x, y)) {
+      onMouseEnter();
+    } else {
+      onMouseLeave();
+    }
+  }
+
   void Button::onMouseEnter() {
+    if (m_label == "Button 1") {
+      std::cout << "Button 1 entered." << std::endl;
+    }
     m_isHovered = true;
   }
 
   void Button::onMouseLeave() {
+    if (m_label == "Button 1") {
+      std::cout << "Button 1 left." << std::endl;
+    }
     m_isHovered = false;
   }
 
@@ -102,10 +124,10 @@ namespace Ui {
   void Button::setFontSize(float size) {
     m_fontSize = size;
     m_font.setSize(size);
-    updateBounds();
+    setupBounds();
   }
 
-  void Button::updateBounds() {
+  void Button::setupBounds() {
     SkScalar width = m_font.measureText(m_label.c_str(), m_label.size(), SkTextEncoding::kUTF8);
     SkScalar height = m_font.getSize();
     m_bounds = SkRect::MakeXYWH(m_bounds.x(), m_bounds.y(), width + 10, height + 10);

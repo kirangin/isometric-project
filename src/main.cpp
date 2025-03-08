@@ -17,6 +17,8 @@
 
 #include <ui/manager.hpp>
 #include <ui/button.hpp>
+#include <ui/vbox_layout.hpp>
+#include <ui/hbox_layout.hpp>
 
 // #define GL_FRAMEBUFFER_SRGB 0x8DB9
 // #define GL_SRGB8_ALPHA8 0x8C43
@@ -137,13 +139,50 @@ int main(int argc, const char* argv[]) {
   SkCanvas* canvas = sSurface->getCanvas();
 
   Ui::Manager manager;
-  Ui::Button* button = manager.addElement<Ui::Button>(12, "Click me!");
-  // button->setColors(SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE, SK_ColorGRAY);
-  button->onClick([]() {
-    std::cout << "Button clicked!" << std::endl;
+
+  auto mainVertLayout = std::make_shared<Ui::VBoxLayout>(SkRect::MakeXYWH(0, 0, 800, 600), 4.0f);
+  auto topLayout = std::make_shared<Ui::HBoxLayout>(SkRect::MakeEmpty(), 0.0f);
+
+  mainVertLayout->setGap(4.0f);
+  topLayout->setGap(4.0f);
+
+  auto btn1 = std::make_shared<Ui::Button>(10, "Button 1");
+  auto btn2 = std::make_shared<Ui::Button>(10, "Button 2");
+  auto btn3 = std::make_shared<Ui::Button>(10, "Button 3");
+  btn1->onClick([]() {
+    std::cout << "Button 1 clicked." << std::endl;
   });
-  button->setFontSize(12.0f);
-  button->setCornerRadius(0.0f);
+  btn2->onClick([]() {
+    std::cout << "Button 2 clicked." << std::endl;
+  });
+  btn3->onClick([]() {
+    std::cout << "Button 3 clicked." << std::endl;
+  });
+
+  topLayout->addChild(btn1);
+  topLayout->addChild(btn2);
+  topLayout->addChild(btn3);
+
+  auto btn4 = std::make_shared<Ui::Button>(0, "Button 4");
+  auto btn5 = std::make_shared<Ui::Button>(0, "Button 5");
+  auto btn6 = std::make_shared<Ui::Button>(0, "Button 6");
+
+  btn4->onClick([]() {
+    std::cout << "Button 4 clicked." << std::endl;
+  });
+  btn5->onClick([]() {
+    std::cout << "Button 5 clicked." << std::endl;
+  });
+  btn6->onClick([]() {
+    std::cout << "Button 6 clicked." << std::endl;
+  });
+
+  mainVertLayout->addChild(topLayout);
+  mainVertLayout->addChild(btn4);
+  mainVertLayout->addChild(btn5);
+  mainVertLayout->addChild(btn6);
+
+  manager.setLayout(mainVertLayout);
 
   setupUiCallback(window, &manager);
 
@@ -152,6 +191,7 @@ int main(int argc, const char* argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 
+    manager.update();
     manager.draw(canvas);
 
     sContext->flush();

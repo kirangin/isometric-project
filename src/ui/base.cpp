@@ -5,6 +5,12 @@ namespace Ui {
 
   void Base::onMouseClick() {}
 
+  void Base::update() {}
+
+  void Base::updateBounds(const SkRect& bounds) {
+    m_bounds = bounds;
+  }
+
   void Base::onMouseMove(float x, float y) {
     if (m_bounds.contains(x, y)) {
       m_isHovered = true;

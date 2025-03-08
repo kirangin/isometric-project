@@ -2,6 +2,9 @@ add_executable(isometric
   ui/base.cpp
   ui/button.cpp
   ui/manager.cpp
+  ui/layout.cpp
+  ui/hbox_layout.cpp
+  ui/vbox_layout.cpp
   main.cpp
 )
 

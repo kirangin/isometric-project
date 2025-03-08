@@ -16,10 +16,14 @@ namespace Ui {
       Button(const SkRect& bounds, const char* text);
       Button(const int& padding, const char* text);
       
+      void update() override;
       void draw(SkCanvas* canvas) override;
+      void updateBounds(const SkRect& bounds) override;
+      
       void onMouseClick() override;
       void onMouseEnter() override;
       void onMouseLeave() override;
+      void onMouseMove(float x, float y) override;
       void onMouseButton(float x, float y, bool pressed) override;
       void setColors(SkColor normal, SkColor hover, SkColor pressed, SkColor disabled);
       void setCornerRadius(float radius);
@@ -40,7 +44,7 @@ namespace Ui {
 
       SkFont m_font;
       void setupFont();
-      void updateBounds();
+      void setupBounds();
   };
 };
 

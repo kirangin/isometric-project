@@ -31,6 +31,8 @@ namespace Ui {
       Base(const SkRect& bounds);
       virtual ~Base() = default;
 
+      virtual void update();
+      virtual void updateBounds(const SkRect& bounds);
       virtual void draw(SkCanvas* canvas) = 0;
       virtual void onMouseEnter() = 0;
       virtual void onMouseLeave() = 0;

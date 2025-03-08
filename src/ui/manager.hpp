@@ -1,6 +1,7 @@
 #ifndef MANAGER_HPP
 #define MANAGER_HPP
 #include <ui/base.hpp>
+#include <ui/layout.hpp>
 
 namespace Ui {
   class Manager {
@@ -11,6 +12,8 @@ namespace Ui {
       void update();
       void handleMouseMove(float x, float y);
       void handleMouseButton(float x, float y, bool pressed);
+      void setLayout(std::shared_ptr<Layout> layout);
+      std::shared_ptr<Layout> getLayout() const;
 
       template <typename T, typename... Args>
       T* addElement(Args&&... args) {
@@ -20,6 +23,7 @@ namespace Ui {
 
     private:
       std::vector<std::unique_ptr<Base>> m_elements;
+      std::shared_ptr<Layout> m_rootLayout;
   };
 }
 
