@@ -15,6 +15,9 @@
 #include <gpu/ganesh/gl/GrGLAssembleInterface.h>
 #include <gpu/ganesh/SkSurfaceGanesh.h>
 
+#include <ui/manager.hpp>
+#include <ui/button.hpp>
+
 // #define GL_FRAMEBUFFER_SRGB 0x8DB9
 // #define GL_SRGB8_ALPHA8 0x8C43
 
@@ -83,6 +86,22 @@ void cleanupSkia() {
   delete sContext;
 }
 
+void setupUiCallback(GLFWwindow* window, Ui::Manager* uiManager) {
+  glfwSetWindowUserPointer(window, uiManager);
+
+  glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
+    Ui::Manager* uiManager = static_cast<Ui::Manager*>(glfwGetWindowUserPointer(window));
+    uiManager->handleMouseMove(x, y);
+  });
+
+  glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+    Ui::Manager* uiManager = static_cast<Ui::Manager*>(glfwGetWindowUserPointer(window));
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    uiManager->handleMouseButton(x, y, action == GLFW_PRESS);
+  });
+}
+
 int main(int argc, const char* argv[]) {
   GLFWwindow* window;
   glfwSetErrorCallback(errorCallback);
@@ -117,15 +136,25 @@ int main(int argc, const char* argv[]) {
 
   SkCanvas* canvas = sSurface->getCanvas();
 
+  Ui::Manager manager;
+  Ui::Button* button = manager.addElement<Ui::Button>(12, "Click me!");
+  // button->setColors(SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE, SK_ColorGRAY);
+  button->onClick([]() {
+    std::cout << "Button clicked!" << std::endl;
+  });
+  button->setFontSize(12.0f);
+  button->setCornerRadius(0.0f);
+
+  setupUiCallback(window, &manager);
+
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 
-    SkPaint paint;
-    paint.setColor(SK_ColorRED);
-    canvas->drawRect(SkRect::MakeXYWH(100, 100, 200, 200), paint);
+    manager.draw(canvas);
 
     sContext->flush();
-
     glfwSwapBuffers(window);
   }
 

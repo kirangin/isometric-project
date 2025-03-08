@@ -1,8 +1,13 @@
-add_executable(isometric main.cpp)
+add_executable(isometric 
+  ui/base.cpp
+  ui/button.cpp
+  ui/manager.cpp
+  main.cpp
+)
 
 target_include_directories(
   isometric PRIVATE 
-  ${CMAKE_SOURCE_DIR}/include 
+  ${CMAKE_SOURCE_DIR}/src 
   ${GLFW_INCLUDE_DIRS}
   ${SKIA_INCLUDE_DIR}
 
@@ -10,6 +15,7 @@ target_include_directories(
   # in my code but Skia's code does. 
   ${SKIA_INCLUDE_DIR}/../
   ${FREETYPE2_INCLUDE_DIRS}
+  ${Fontconfig_INCLUDE_DIRS}
 )
 
-target_link_libraries(isometric PRIVATE ${GLFW_LIBRARIES} ${SKIA_LIBRARIES} ${FREETYPE2_LIBRARIES} GL pthread dl X11)
+target_link_libraries(isometric PRIVATE ${GLFW_LIBRARIES} ${SKIA_LIBRARIES} ${FREETYPE2_LIBRARIES} ${Fontconfig_LIBRARIES} GL pthread dl X11)

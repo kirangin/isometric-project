@@ -15,7 +15,7 @@ find_path(SKIA_INCLUDE_DIR
 )
 
 # Define the list of Skia libraries to find (adjust this based on your Skia build)
-set(SKIA_LIB_NAMES skia skshaper skresources)
+set(SKIA_LIB_NAMES skia skshaper skresources skparagraph)
 
 # Search for each library in the list
 foreach(lib ${SKIA_LIB_NAMES})

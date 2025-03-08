@@ -16,5 +16,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 find_package(GLFW REQUIRED)
 find_package(Skia REQUIRED)
 find_package(FreeType2 REQUIRED)
+find_package(Fontconfig REQUIRED)
 
 add_subdirectory(src)
