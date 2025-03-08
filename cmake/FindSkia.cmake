@@ -21,7 +21,7 @@ set(SKIA_LIB_NAMES skia skshaper skresources)
 foreach(lib ${SKIA_LIB_NAMES})
   find_library(SKIA_${lib}_LIBRARY
     NAMES ${lib}
-    PATH_SUFFIXES out/Static lib
+    PATH_SUFFIXES out/Release lib
     HINTS ${SKIA_ROOT}
   )
   if(SKIA_${lib}_LIBRARY)
