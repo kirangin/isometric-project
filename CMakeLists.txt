@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 project(isometric VERSION 0.1
                   DESCRIPTION "A simple isometric sprite creator"
@@ -7,7 +7,7 @@ project(isometric VERSION 0.1
 set(CMAKE_CXX_STANDARD 17)
 
 # Set the path to your Skia installation
-set(SKIA_ROOT "$ENV{HOME}/skia")
+set(SKIA_ROOT "$ENV{HOME}/deps/skia")
 
 # Add cmake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
