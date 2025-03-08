@@ -1,88 +1,137 @@
 #include <iostream>
-#define GLFW_EXPOSE_NATIVE_X11
-#define GLFW_EXPOSE_NATIVE_GLX
+#define SK_GANESH
+#define SK_GL
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 #include <core/SkCanvas.h>
 #include <core/SkSurface.h>
-#include <gpu/ganesh/gl/glx/GrGLMakeGLXInterface.h>
+#include <core/SkColorSpace.h>
 #include <gpu/ganesh/GrDirectContext.h>
 #include <gpu/ganesh/SkSurfaceGanesh.h>
+#include <gpu/ganesh/GrBackendSurface.h>
+#include <gpu/ganesh/gl/glx/GrGLMakeGLXInterface.h>
 #include <gpu/ganesh/gl/GrGLBackendSurface.h>
 #include <gpu/ganesh/gl/GrGLInterface.h>
 #include <gpu/ganesh/gl/GrGLDirectContext.h>
+#include <gpu/ganesh/gl/GrGLAssembleInterface.h>
 #include <gpu/ganesh/SkSurfaceGanesh.h>
-#include <X11/Xlib.h>
 
-int main(int argc, char const *argv[]) {
+// #define GL_FRAMEBUFFER_SRGB 0x8DB9
+// #define GL_SRGB8_ALPHA8 0x8C43
+
+GrDirectContext* sContext = nullptr;
+SkSurface* sSurface = nullptr;
+
+void errorCallback(int error, const char* description) {
+  std::cerr << "Error: " << description << std::endl;
+}
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+  }
+}
+
+void initSkia(int w, int h) {
+  auto interface = GrGLMakeNativeInterface();
+  if (interface == nullptr) {
+    std::cerr << "Failed to create native interface. Using backup plan..." << std::endl;
+    
+    interface = GrGLMakeAssembledInterface(nullptr, (GrGLGetProc)* [](void*, const char* p) -> void* {
+      return (void*) glfwGetProcAddress(p);
+    });
+
+    if (interface == nullptr) {
+      std::cerr << "Failed to create assembled interface." << std::endl;
+      return;
+    }
+  }
+
+  sContext = GrDirectContexts::MakeGL(interface).release();
+  if (sContext == nullptr) {
+    std::cerr << "Failed to create context." << std::endl;
+    return;
+  }
+
+  GrGLFramebufferInfo framebufferInfo;
+  framebufferInfo.fFBOID = 0;
+  framebufferInfo.fFormat = GL_RGBA8;
+
+  SkColorType colorType = kRGBA_8888_SkColorType;
+  GrBackendRenderTarget backendRenderTarget = GrBackendRenderTargets::MakeGL(w, h, 0, 0, framebufferInfo);
+
+  if (!sContext) {
+    std::cerr << "Failed to create context." << std::endl;
+    return;
+  }
+
+  if (backendRenderTarget.isValid() == false) {
+    std::cerr << "Failed to create backend render target." << std::endl;
+    return;
+  }
+
+  sSurface = SkSurfaces::WrapBackendRenderTarget(
+    sContext, backendRenderTarget, kBottomLeft_GrSurfaceOrigin, colorType, nullptr, nullptr
+  ).release();
+  if (sSurface == nullptr) {
+    std::cerr << "Failed to create surface." << std::endl;
+    return;
+  }
+}
+
+void cleanupSkia() {
+  delete sSurface;
+  delete sContext;
+}
+
+int main(int argc, const char* argv[]) {
+  GLFWwindow* window;
+  glfwSetErrorCallback(errorCallback);
   if (!glfwInit()) {
-    std::cerr << "Failed to initialize GLFW" << std::endl;
+    std::cerr << "Failed to initialize GLFW." << std::endl;
     return -1;
   }
 
-  GLFWwindow *window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
+  glfwWindowHint(GLFW_STENCIL_BITS, 0);
+  // glfwWindowHint(GLFW_ALPHA_BITS, 0);
+  glfwWindowHint(GLFW_DEPTH_BITS, 0);
+
+  window = glfwCreateWindow(800, 600, "Hello, Skia!", nullptr, nullptr);
   if (!window) {
-    std::cerr << "Failed to create window" << std::endl;
+    std::cerr << "Failed to create window." << std::endl;
     glfwTerminate();
     return -1;
   }
 
-  /* Skia */
-  GrContextOptions opts;
-  opts.fSuppressPrints = true;
+  glfwMakeContextCurrent(window);
+  // glEnable(GL_FRAMEBUFFER_SRGB);
 
-  // Get the X11 Display, Window, and GLX Context
-  Display* display = glfwGetX11Display();
-  Window x11Window = glfwGetX11Window(window);
-  GLXContext glxContext = glfwGetGLXContext(window);
-  XVisualInfo* visualInfo;
+  initSkia(800, 600);
 
-  int chooseVisualAtt[] = {
-    GLX_RGBA,
-    GLX_DOUBLEBUFFER,
-    GLX_STENCIL_SIZE, 8,
-    None
-  };
-  visualInfo = glXChooseVisual(display, DefaultScreen(display), chooseVisualAtt);
+  glfwSwapInterval(1);
+  glfwSetKeyCallback(window, keyCallback);
 
-  // Set GLX context with the current context
-  glXCreateContext(display, visualInfo, glxContext, GL_TRUE);
-  glXMakeContextCurrent(display, x11Window, x11Window, glxContext);
-
-  sk_sp<const GrGLInterface> interface = GrGLInterfaces::MakeGLX();
-  if (nullptr == glXGetCurrentContext()) {
-    std::cerr << "Failed to create GLX context" << std::endl;
-    return -1;
-  }
-  sk_sp<GrDirectContext> context = GrDirectContexts::MakeGL(interface, opts);
-
-  int fbWidth, fbHeight;
-  glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-
-  GrGLFramebufferInfo info;
-  info.fFBOID = 0;
-  info.fFormat = GL_RGBA8;
-
-  SkColorType colorType = kRGBA_8888_SkColorType;
-  const SkImageInfo imageInfo = SkImageInfo::Make(fbWidth, fbHeight, colorType, kPremul_SkAlphaType);
-  sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(context.get(), skgpu::Budgeted::kYes, imageInfo);
-
-  SkCanvas* canvas = surface->getCanvas();
+  SkCanvas* canvas = sSurface->getCanvas();
 
   while (!glfwWindowShouldClose(window)) {
-    canvas->clear(SK_ColorWHITE);
+    glfwPollEvents();
 
     SkPaint paint;
     paint.setColor(SK_ColorRED);
-    paint.setAntiAlias(true);
-    canvas->drawCircle(320, 240, 100, paint);
+    canvas->drawRect(SkRect::MakeXYWH(100, 100, 200, 200), paint);
 
-    context->flush();
+    sContext->flush();
+
     glfwSwapBuffers(window);
-    glfwPollEvents();
   }
 
-  glfwTerminate();
+  cleanupSkia();
   glfwDestroyWindow(window);
+  glfwTerminate();
+
   return 0;
 }
