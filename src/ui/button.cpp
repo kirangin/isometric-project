@@ -84,16 +84,10 @@ namespace Ui {
   }
 
   void Button::onMouseEnter() {
-    if (m_label == "Button 1") {
-      std::cout << "Button 1 entered." << std::endl;
-    }
     m_isHovered = true;
   }
 
   void Button::onMouseLeave() {
-    if (m_label == "Button 1") {
-      std::cout << "Button 1 left." << std::endl;
-    }
     m_isHovered = false;
   }
 

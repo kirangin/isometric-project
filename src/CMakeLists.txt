@@ -5,6 +5,7 @@ add_executable(isometric
   ui/layout.cpp
   ui/hbox_layout.cpp
   ui/vbox_layout.cpp
+  ui/input.cpp
   main.cpp
 )
 

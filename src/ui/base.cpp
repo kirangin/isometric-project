@@ -43,4 +43,23 @@ namespace Ui {
       }
     }
   }
+
+  void Base::onKeyUp(int key) {}
+  void Base::onKeyDown(int key) {}
+
+  void Base::getFlatList(std::vector<std::shared_ptr<Base>>& list) {
+    list.push_back(std::shared_ptr<Base>(this));
+
+    for (auto& child : m_children) {
+      child->getFlatList(list);
+    }
+  }
+
+  SkPoint Base::globalToLocal(float x, float y) const {
+    SkPoint local = { x - m_bounds.left(), y - m_bounds.top() };
+    if (m_parent) {
+      return m_parent->globalToLocal(local.x(), local.y());
+    }
+    return local;
+  }
 };

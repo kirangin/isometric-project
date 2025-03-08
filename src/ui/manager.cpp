@@ -2,58 +2,44 @@
 
 namespace Ui {
   void Manager::draw(SkCanvas* canvas) {
-    if (m_rootLayout) {
-      m_rootLayout->draw(canvas);
-    }
-
-    for (auto& element : m_elements) {
-      if (element->isEnabled()) {
-        element->draw(canvas);
-      }
-    }
+    if (!m_rootLayout) return;
+    m_rootLayout->draw(canvas);
   }
 
   void Manager::update() {
-    if (m_rootLayout) {
-      m_rootLayout->update();
-    }
-
-    for (auto& element : m_elements) {
-      if (element->isEnabled()) {
-        element->update();
-      }
-    }
+    if (!m_rootLayout) return;
+    m_rootLayout->update();
   }
 
   void Manager::handleMouseMove(float x, float y) {
-    if (m_rootLayout) {
-      m_rootLayout->onMouseMove(x, y);
-    }
-    
-    for (auto& element : m_elements) {
-      if (element->isEnabled()) {
-        element->onMouseMove(x, y);
-      }
-    }
+    if (!m_rootLayout) return;
+    m_rootLayout->onMouseMove(x, y);
   }
 
   void Manager::handleMouseButton(float x, float y, bool pressed) {
-    if (m_rootLayout) {
-      m_rootLayout->onMouseButton(x, y, pressed);
-    }
+    if (!m_rootLayout) return;
+    m_rootLayout->onMouseButton(x, y, pressed);
+  }
 
-    for (auto& element : m_elements) {
-      if (element->isEnabled()) {
-        if (element->contains(x, y)) {
-          element->onMouseButton(x, y, pressed);
-        }
-      }
-    }
+  void Manager::handleKeyUp(int key) {
+    if (!m_rootLayout) return;
+    m_rootLayout->onKeyUp(key);
+  }
+
+  void Manager::handleKeyDown(int key) {
+    if (!m_rootLayout) return;
+    m_rootLayout->onKeyDown(key);
+  }
+
+  void Manager::setFocusedInput(std::shared_ptr<Input> input) {
+    if (m_focusedInput == nullptr) return;
+
+    m_focusedInput = input;
+    m_focusedInput->setFocus(true);
   }
 
   void Manager::setLayout(std::shared_ptr<Layout> layout) {
     m_rootLayout = layout;
-    m_elements.clear();
   }
 
   std::shared_ptr<Layout> Manager::getLayout() const {

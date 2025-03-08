@@ -59,4 +59,16 @@ namespace Ui {
       child->onMouseButton(x, y, down);
     }
   }
+
+  void Layout::onKeyDown(int key) {
+    for (auto& child : m_childrens) {
+      child->onKeyDown(key);
+    }
+  }
+
+  void Layout::onKeyUp(int key) {
+    for (auto& child : m_childrens) {
+      child->onKeyUp(key);
+    }
+  }
 };

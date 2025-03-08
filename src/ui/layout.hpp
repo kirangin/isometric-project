@@ -34,6 +34,8 @@ namespace Ui {
       void onMouseButton(float x, float y, bool down) override;
       void onMouseEnter() override {}
       void onMouseLeave() override {}
+      void onKeyDown(int key) override;
+      void onKeyUp(int key) override;
 
     protected:
       virtual void layout() = 0;

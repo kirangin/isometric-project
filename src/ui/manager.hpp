@@ -3,6 +3,9 @@
 #include <ui/base.hpp>
 #include <ui/layout.hpp>
 
+/* TODO: find better solution */
+#include <ui/input.hpp>
+
 namespace Ui {
   class Manager {
     public:
@@ -12,6 +15,10 @@ namespace Ui {
       void update();
       void handleMouseMove(float x, float y);
       void handleMouseButton(float x, float y, bool pressed);
+      void handleKeyUp(int key);
+      void handleKeyDown(int key);
+      void setFocusedInput(std::shared_ptr<Input> input);
+
       void setLayout(std::shared_ptr<Layout> layout);
       std::shared_ptr<Layout> getLayout() const;
 
@@ -22,8 +29,8 @@ namespace Ui {
       }
 
     private:
-      std::vector<std::unique_ptr<Base>> m_elements;
       std::shared_ptr<Layout> m_rootLayout;
+      std::shared_ptr<Input> m_focusedInput;
   };
 }
 

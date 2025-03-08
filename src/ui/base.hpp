@@ -26,6 +26,8 @@ namespace Ui {
       bool m_isPressed;
       bool m_isEnabled;
       bool m_isVisible;
+      std::vector<std::shared_ptr<Base>> m_children;
+      Base* m_parent = nullptr;
 
     public:
       Base(const SkRect& bounds);
@@ -39,8 +41,13 @@ namespace Ui {
 
       virtual void onMouseMove(float x, float y);
       virtual void onMouseClick();
-      virtual bool contains(float x, float y) const;
       virtual void onMouseButton(float x, float y, bool pressed);
+      virtual void onKeyUp(int key);
+      virtual void onKeyDown(int key);
+
+      virtual bool contains(float x, float y) const;
+      virtual void getFlatList(std::vector<std::shared_ptr<Base>>& list);
+      virtual SkPoint globalToLocal(float x, float y) const;
 
       void setEnabled(bool enabled);
       bool isEnabled() const;

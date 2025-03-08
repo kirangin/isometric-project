@@ -17,8 +17,10 @@
 
 #include <ui/manager.hpp>
 #include <ui/button.hpp>
+#include <ui/input.hpp>
 #include <ui/vbox_layout.hpp>
 #include <ui/hbox_layout.hpp>
+#include <ui/layout.hpp>
 
 // #define GL_FRAMEBUFFER_SRGB 0x8DB9
 // #define GL_SRGB8_ALPHA8 0x8C43
@@ -102,6 +104,15 @@ void setupUiCallback(GLFWwindow* window, Ui::Manager* uiManager) {
     glfwGetCursorPos(window, &x, &y);
     uiManager->handleMouseButton(x, y, action == GLFW_PRESS);
   });
+
+  glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+    Ui::Manager* uiManager = static_cast<Ui::Manager*>(glfwGetWindowUserPointer(window));
+    if (action == GLFW_PRESS) {
+      uiManager->handleKeyDown(key);
+    } else if (action == GLFW_RELEASE) {
+      uiManager->handleKeyUp(key);
+    }
+  });
 }
 
 int main(int argc, const char* argv[]) {
@@ -181,6 +192,14 @@ int main(int argc, const char* argv[]) {
   mainVertLayout->addChild(btn4);
   mainVertLayout->addChild(btn5);
   mainVertLayout->addChild(btn6);
+
+  std::string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec elit nec elit.";
+  auto input = std::make_shared<Ui::Input>(SkRect::MakeXYWH(0, 0, 200, 20), "Enter text here...", text);
+  mainVertLayout->addChild(input);
+
+  std::string text2 = "Sinting gelo miring";
+  auto input2 = std::make_shared<Ui::Input>(SkRect::MakeXYWH(0, 0, 200, 20), "Enter text here...", text2);
+  mainVertLayout->addChild(input2);
 
   manager.setLayout(mainVertLayout);
 
