@@ -16,21 +16,15 @@ namespace Ui {
       void handleMouseMove(float x, float y);
       void handleMouseButton(float x, float y, bool pressed);
       void handleKeyUp(int key);
-      void handleKeyDown(int key);
-      void setFocusedInput(std::shared_ptr<Input> input);
+      void handleKeyDown(int key, int mods);
+      void handleChar(unsigned int key);
 
       void setLayout(std::shared_ptr<Layout> layout);
       std::shared_ptr<Layout> getLayout() const;
 
-      template <typename T, typename... Args>
-      T* addElement(Args&&... args) {
-        m_elements.push_back(std::make_unique<T>(std::forward<Args>(args)...));
-        return static_cast<T*>(m_elements.back().get());
-      }
-
     private:
-      std::shared_ptr<Layout> m_rootLayout;
-      std::shared_ptr<Input> m_focusedInput;
+      std::shared_ptr<Layout> m_layout;
+
   };
 }
 

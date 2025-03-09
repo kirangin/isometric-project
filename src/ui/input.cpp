@@ -60,24 +60,30 @@ namespace Ui {
 
     /* Draw cursor */
     if (m_focus) {
-      SkScalar cursorX = m_font.measureText(m_text.c_str(), m_cursorPos, SkTextEncoding::kUTF8);
-      SkScalar cursorY = m_bounds.top() + m_padding;
-      SkScalar cursorHeight = m_font.getSize();
-      SkRect cursorBounds = SkRect::MakeXYWH(cursorX, cursorY, 1.0f, cursorHeight);
-      canvas->drawRect(cursorBounds, paint);
+      // Calculate text width up to cursor position
+      SkScalar textWidth = m_font.measureText(m_text.c_str(), m_cursorPos, SkTextEncoding::kUTF8);
+      
+      // Draw cursor at correct position
+      SkRect cursor = SkRect::MakeXYWH(
+        m_bounds.left() + m_padding + textWidth,
+        m_bounds.top() + m_padding + 1.0f,
+        2.0f, 
+        m_font.getSize()
+      );
+      canvas->drawRect(cursor, paint);
     }
   }
 
   void Input::setupFont() {
     sk_sp<SkFontMgr> mgr = SkFontMgr_New_FontConfig(nullptr, SkFontScanner_Make_FreeType());
-    sk_sp<SkTypeface> typeface = mgr->legacyMakeTypeface(DEFAULT_FONT_NAME, SkFontStyle());
+    sk_sp<SkTypeface> typeface = mgr->matchFamilyStyle("Inter", SkFontStyle());
     if (!typeface) {
       std::cerr << "Failed to load font." << std::endl;
       return;
     }
 
     m_font = SkFont(typeface, m_fontSize);
-    m_font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
+    m_font.setEdging(SkFont::Edging::kAntiAlias);
   }
 
   void Input::updateBounds(const SkRect& bounds) {
@@ -93,7 +99,11 @@ namespace Ui {
   }
 
   void Input::onMouseButton(float x, float y, bool down) {
-    
+    if (m_bounds.contains(x, y)) {
+      setFocus(true);
+    } else {
+      setFocus(false);
+    }
   }
 
   void Input::onMouseEnter() {
@@ -104,21 +114,67 @@ namespace Ui {
     m_isHovered = false;
   }
 
-  void Input::onKeyDown(int key) {
-    std::cout << "Key: " << key << std::endl;
+  void Input::onKeyDown(int key, int mods) {
     if (!m_focus) return;
 
-    // If backspace key is pressed
-    if (key == 259 && m_cursorPos > 0) {
-      m_text.erase(m_cursorPos - 1, 1);
-      m_cursorPos--;
-    } else {
-      m_text.insert(m_cursorPos - 1, 1, key);
-      m_cursorPos++;
+    /* Special keys */
+    if (key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_DELETE || key == GLFW_KEY_LEFT 
+     || key == GLFW_KEY_RIGHT || key == GLFW_KEY_HOME || key == GLFW_KEY_END) {
+      handleSpecialKeys(key);
+      return;
+    }
+
+    /* Handle CTRL combination */
+    if (mods & GLFW_MOD_CONTROL) {
+      // TODO: Handle
     }
   }
 
-  void Input::onKeyUp(int key) {
-    std::cout << "Key: " << key << std::endl;
+  void Input::onChar(unsigned int key) {
+    if (!m_focus && !isValidCharacter(key)) return;
+
+    m_text.insert(m_cursorPos - 1, 1, key);
+    m_cursorPos++;
+  }
+
+  void Input::handleSpecialKeys(int key) {
+    switch (key) {
+      case GLFW_KEY_BACKSPACE:
+        if (m_cursorPos > 0) {
+          m_text.erase(m_cursorPos - 1, 1);
+          m_cursorPos--;
+        }
+        break;
+      case GLFW_KEY_DELETE:
+        if (m_cursorPos < m_text.length()) {
+          m_text.erase(m_cursorPos, 1);
+        }
+        break;
+      case GLFW_KEY_LEFT:
+        if (m_cursorPos > 0) {
+          m_cursorPos--;
+        }
+        break;
+      case GLFW_KEY_RIGHT:
+        if (m_cursorPos < m_text.length()) {
+          m_cursorPos++;
+        }
+        break;
+      case GLFW_KEY_HOME:
+        m_cursorPos = 0;
+        break;
+      case GLFW_KEY_END:
+        m_cursorPos = m_text.length();
+        break;
+    }
+  }
+
+  bool Input::isValidCharacter(unsigned int key) const {
+    if (m_inputType == InputType::Numeric) {
+      return (key >= '0' && key <= '9') ||
+      key == '.' || key == '-';
+    }
+
+    return true;
   }
 };

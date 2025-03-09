@@ -7,8 +7,7 @@
 
 #include <core/SkString.h>
 #include <core/SkTextBlob.h>
-
-#define DEFAULT_FONT_NAME "./assets/Helvetica.ttf"
+#include <GLFW/glfw3.h>
 
 namespace Ui {
   enum InputType {
@@ -34,8 +33,8 @@ namespace Ui {
       void onMouseButton(float x, float y, bool down) override;
       void onMouseEnter() override;
       void onMouseLeave() override;
-      void onKeyDown(int key) override;
-      void onKeyUp(int key) override;
+      void onKeyDown(int key, int mods) override;
+      void onChar(unsigned int key) override;
 
     private:
       std::string m_placeholder;
@@ -52,6 +51,8 @@ namespace Ui {
       float m_fontSize = 12.0f;
 
       void setupFont();
+      void handleSpecialKeys(int key);
+      bool isValidCharacter(unsigned int key) const;
   };
 }
 

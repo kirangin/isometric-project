@@ -45,7 +45,7 @@ namespace Ui {
   }
 
   void Base::onKeyUp(int key) {}
-  void Base::onKeyDown(int key) {}
+  void Base::onKeyDown(int key, int mods) {}
 
   void Base::getFlatList(std::vector<std::shared_ptr<Base>>& list) {
     list.push_back(std::shared_ptr<Base>(this));
@@ -62,4 +62,6 @@ namespace Ui {
     }
     return local;
   }
+
+  void Base::onChar(unsigned int key) {}
 };

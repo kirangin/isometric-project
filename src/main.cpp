@@ -107,11 +107,16 @@ void setupUiCallback(GLFWwindow* window, Ui::Manager* uiManager) {
 
   glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
     Ui::Manager* uiManager = static_cast<Ui::Manager*>(glfwGetWindowUserPointer(window));
-    if (action == GLFW_PRESS) {
-      uiManager->handleKeyDown(key);
+    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+      uiManager->handleKeyDown(key, mods);
     } else if (action == GLFW_RELEASE) {
       uiManager->handleKeyUp(key);
     }
+  });
+
+  glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int key) {
+    Ui::Manager* uiManager = static_cast<Ui::Manager*>(glfwGetWindowUserPointer(window));
+    uiManager->handleChar(key);
   });
 }
 
@@ -208,7 +213,7 @@ int main(int argc, const char* argv[]) {
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
     manager.update();
     manager.draw(canvas);

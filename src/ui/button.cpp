@@ -12,14 +12,14 @@ namespace Ui {
 
   void Button::setupFont() {
     sk_sp<SkFontMgr> mgr = SkFontMgr_New_FontConfig(nullptr, SkFontScanner_Make_FreeType());
-    sk_sp<SkTypeface> typeface = mgr->legacyMakeTypeface(DEFAULT_FONT_NAME, SkFontStyle());
+    sk_sp<SkTypeface> typeface = mgr->matchFamilyStyle("Inter", SkFontStyle());
     if (!typeface) {
       std::cerr << "Failed to load font." << std::endl;
       return;
     }
 
     m_font = SkFont(typeface, m_fontSize);
-    m_font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
+    m_font.setEdging(SkFont::Edging::kAntiAlias);
   }
 
   void Button::update() {
@@ -48,10 +48,10 @@ namespace Ui {
     canvas->drawRRect(rect, paint);
 
     /* Draw button's border */
-    // paint.setColor(SkColorSetRGB(255, 255, 255));
-    // paint.setStyle(SkPaint::kStroke_Style);
-    // paint.setStrokeWidth(1.0f);
-    // canvas->drawRRect(rect, paint);
+    paint.setColor(SkColorSetRGB(255, 255, 255));
+    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStrokeWidth(1.0f);
+    canvas->drawRRect(rect, paint);
 
     /* Draw button's label */
     paint.setColor(m_isEnabled ? m_textColor : m_textDisabledColor);

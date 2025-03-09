@@ -8,8 +8,6 @@
 
 #include <core/SkString.h>
 
-#define DEFAULT_FONT_NAME "./assets/Helvetica.ttf"
-
 namespace Ui {
   class Button : public Base {
     public:
@@ -40,7 +38,7 @@ namespace Ui {
       SkColor m_textColor = SK_ColorBLACK;
       SkColor m_textDisabledColor = SkColorSetRGB(120, 120, 120);
       float m_cornerRadius = 2.0f;
-      float m_fontSize = 16.0f;
+      float m_fontSize = 12.0f;
 
       SkFont m_font;
       void setupFont();

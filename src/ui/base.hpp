@@ -43,7 +43,8 @@ namespace Ui {
       virtual void onMouseClick();
       virtual void onMouseButton(float x, float y, bool pressed);
       virtual void onKeyUp(int key);
-      virtual void onKeyDown(int key);
+      virtual void onKeyDown(int key, int mods);
+      virtual void onChar(unsigned int key);
 
       virtual bool contains(float x, float y) const;
       virtual void getFlatList(std::vector<std::shared_ptr<Base>>& list);

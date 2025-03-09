@@ -60,15 +60,21 @@ namespace Ui {
     }
   }
 
-  void Layout::onKeyDown(int key) {
+  void Layout::onKeyDown(int key, int mods) {
     for (auto& child : m_childrens) {
-      child->onKeyDown(key);
+      child->onKeyDown(key, mods);
     }
   }
 
   void Layout::onKeyUp(int key) {
     for (auto& child : m_childrens) {
       child->onKeyUp(key);
+    }
+  }
+
+  void Layout::onChar(unsigned int key) {
+    for (auto& child : m_childrens) {
+      child->onChar(key);
     }
   }
 };

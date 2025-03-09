@@ -2,47 +2,45 @@
 
 namespace Ui {
   void Manager::draw(SkCanvas* canvas) {
-    if (!m_rootLayout) return;
-    m_rootLayout->draw(canvas);
+    if (!m_layout) return;
+    m_layout->draw(canvas);
   }
 
   void Manager::update() {
-    if (!m_rootLayout) return;
-    m_rootLayout->update();
+    if (!m_layout) return;
+    m_layout->update();
   }
 
   void Manager::handleMouseMove(float x, float y) {
-    if (!m_rootLayout) return;
-    m_rootLayout->onMouseMove(x, y);
+    if (!m_layout) return;
+    m_layout->onMouseMove(x, y);
   }
 
   void Manager::handleMouseButton(float x, float y, bool pressed) {
-    if (!m_rootLayout) return;
-    m_rootLayout->onMouseButton(x, y, pressed);
+    if (!m_layout) return;
+    m_layout->onMouseButton(x, y, pressed);
   }
 
   void Manager::handleKeyUp(int key) {
-    if (!m_rootLayout) return;
-    m_rootLayout->onKeyUp(key);
+    if (!m_layout) return;
+    m_layout->onKeyUp(key);
   }
 
-  void Manager::handleKeyDown(int key) {
-    if (!m_rootLayout) return;
-    m_rootLayout->onKeyDown(key);
+  void Manager::handleKeyDown(int key, int mods) {
+    if (!m_layout) return;
+    m_layout->onKeyDown(key, mods);
   }
 
-  void Manager::setFocusedInput(std::shared_ptr<Input> input) {
-    if (m_focusedInput == nullptr) return;
-
-    m_focusedInput = input;
-    m_focusedInput->setFocus(true);
+  void Manager::handleChar(unsigned int key) {
+    if (!m_layout) return;
+    m_layout->onChar(key);
   }
 
   void Manager::setLayout(std::shared_ptr<Layout> layout) {
-    m_rootLayout = layout;
+    m_layout = layout;
   }
 
   std::shared_ptr<Layout> Manager::getLayout() const {
-    return m_rootLayout;
+    return m_layout;
   }
 }
