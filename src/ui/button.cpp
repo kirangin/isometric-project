@@ -12,7 +12,7 @@ namespace Ui {
 
   void Button::setupFont() {
     sk_sp<SkFontMgr> mgr = SkFontMgr_New_FontConfig(nullptr, SkFontScanner_Make_FreeType());
-    sk_sp<SkTypeface> typeface = mgr->matchFamilyStyle("Inter", SkFontStyle());
+    sk_sp<SkTypeface> typeface = mgr->matchFamilyStyle("Ubuntu", SkFontStyle());
     if (!typeface) {
       std::cerr << "Failed to load font." << std::endl;
       return;
@@ -125,5 +125,14 @@ namespace Ui {
     SkScalar width = m_font.measureText(m_label.c_str(), m_label.size(), SkTextEncoding::kUTF8);
     SkScalar height = m_font.getSize();
     m_bounds = SkRect::MakeXYWH(m_bounds.x(), m_bounds.y(), width + 10, height + 10);
+  }
+
+  void Button::click() {
+    onMouseClick();
+  }
+
+  bool Button::isInside(const SkPoint& point) {
+    return point.fX >= m_bounds.left() && point.fX <= m_bounds.right() 
+      && point.fY >= m_bounds.top() && point.fY <= m_bounds.bottom();
   }
 };

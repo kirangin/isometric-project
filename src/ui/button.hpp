@@ -27,6 +27,8 @@ namespace Ui {
       void setCornerRadius(float radius);
       void setFontSize(float size);
       void onClick(std::function<void()> cb);
+      void click();
+      bool isInside(const SkPoint& point);
       
     private:
       std::string m_label;

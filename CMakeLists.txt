@@ -18,4 +18,8 @@ find_package(Skia REQUIRED)
 find_package(FreeType2 REQUIRED)
 find_package(Fontconfig REQUIRED)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/extern/glm)
 add_subdirectory(src)
+
+# Enable testing (CTest)
+enable_testing()

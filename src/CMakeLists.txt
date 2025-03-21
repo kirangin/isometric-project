@@ -1,11 +1,14 @@
 add_executable(isometric 
-  ui/base.cpp
-  ui/button.cpp
-  ui/manager.cpp
-  ui/layout.cpp
-  ui/hbox_layout.cpp
-  ui/vbox_layout.cpp
-  ui/input.cpp
+  render/renderer.cpp
+  render/cube.cpp
+  export/png.cpp
+
+  core/application.cpp
+  core/render_context.cpp
+  core/window.cpp
+  core/event_handler.cpp
+  tools/tool.cpp
+  tools/plane_tool.cpp
   main.cpp
 )
 
@@ -20,6 +23,13 @@ target_include_directories(
   ${SKIA_INCLUDE_DIR}/../
   ${FREETYPE2_INCLUDE_DIRS}
   ${Fontconfig_INCLUDE_DIRS}
+
+  # Stb image and GLM
+  ${CMAKE_SOURCE_DIR}/extern/glm
+  ${CMAKE_SOURCE_DIR}/extern/stb
 )
 
-target_link_libraries(isometric PRIVATE ${GLFW_LIBRARIES} ${SKIA_LIBRARIES} ${FREETYPE2_LIBRARIES} ${Fontconfig_LIBRARIES} GL pthread dl X11)
+add_subdirectory(math)
+add_subdirectory(ui)
+
+target_link_libraries(isometric PRIVATE math ui ${SKIA_LIBRARIES} ${FREETYPE2_LIBRARIES} ${Fontconfig_LIBRARIES})

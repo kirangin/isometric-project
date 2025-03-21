@@ -12,7 +12,7 @@ namespace Ui {
 
     private:
       float m_gap = 0.0f;
-
+w
     protected:
       void layout() override;
   };
